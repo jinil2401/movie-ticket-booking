@@ -27,6 +27,7 @@ const movieSchema = new mongoose.Schema({
     ref: "Admin",
     required: true,
   },
+  timings: [{ type: String }], // Added timings as an array of strings
 });
 
 export default mongoose.model("Movie", movieSchema);

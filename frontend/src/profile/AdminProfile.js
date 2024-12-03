@@ -1,81 +1,134 @@
-import { Box } from "@mui/system";
-import React, { Fragment, useEffect, useState } from "react";
-import { getAdminById } from "../api-helpers/api-helpers";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Card, CardContent, CardMedia, IconButton } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import EditIcon from "@mui/icons-material/Edit";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { getAdminById, deleteMovieById } from "../api-helpers/api-helpers";
+
 const AdminProfile = () => {
-  const [admin, setAdmin] = useState();
+  const [admin, setAdmin] = useState({ email: "", addedMovies: [] });
+  const navigate = useNavigate();
+
   useEffect(() => {
     getAdminById()
       .then((res) => setAdmin(res.admin))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }, []);
-  return (
-    <Box width={"100%"} display="flex">
-      <Fragment>
-        {" "}
-        {admin && (
-          <Box
-            flexDirection={"column"}
-            justifyContent="center"
-            alignItems={"center"}
-            width={"30%"}
-            padding={3}
-          >
-            <AccountCircleIcon
-              sx={{ fontSize: "10rem", textAlign: "center", ml: 3 }}
-            />
 
-            <Typography
-              mt={1}
-              padding={1}
-              width={"auto"}
-              textAlign={"center"}
-              border={"1px solid #ccc"}
-              borderRadius={6}
-            >
-              Email: {admin.email}
-            </Typography>
-          </Box>
-        )}
-        {admin && admin.addedMovies.length > 0 && (
-          <Box width={"70%"} display="flex" flexDirection={"column"}>
-            <Typography
-              variant="h3"
-              fontFamily={"verdana"}
-              textAlign="center"
-              padding={2}
-            >
-              Added Movies
-            </Typography>
-            <Box
-              margin={"auto"}
-              display="flex"
-              flexDirection={"column"}
-              width="80%"
-            >
-              <List>
-                {admin.addedMovies.map((movie, index) => (
-                  <ListItem
-                    sx={{
-                      bgcolor: "#00d386",
-                      color: "white",
-                      textAlign: "center",
-                      margin: 1,
-                    }}
+  const handleDelete = (id) => {
+    deleteMovieById(id)
+      .then(() => {
+        setAdmin((prevAdmin) => ({
+          ...prevAdmin,
+          addedMovies: prevAdmin.addedMovies.filter((movie) => movie._id !== id),
+        }));
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const handleEdit = (movie) => {
+    navigate(`/edit-movie/${movie._id}`);
+  };
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        bgcolor: "#1a202c",
+        padding: 4,
+      }}
+    >
+      <Box
+        sx={{
+          width: "80%",
+          display: "flex",
+          bgcolor: "rgba(255, 255, 255, 0.1)",
+          backdropFilter: "blur(15px)",
+          borderRadius: "15px",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.37)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+        }}
+      >
+        <Box
+          sx={{
+            width: "30%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: 3,
+            borderRight: "2px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <AccountCircleIcon sx={{ fontSize: 100, color: "#E63946", mb: 2 }} />
+          <Typography variant="h6" fontWeight="bold" color="white" mb={1}>
+            {admin.email}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "70%",
+            padding: 3,
+            overflowY: "auto",
+          }}
+        >
+          <Typography variant="h2" fontWeight="bold" color="white" mb={2}>
+            Added Movies
+          </Typography>
+          <AnimatePresence>
+            {admin.addedMovies.map((movie) => (
+              <motion.div
+                key={movie._id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Card
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1,
+                    bgcolor: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    sx={{ width: 90, height: 120, borderRadius: "5px" }}
+                    image={movie.posterUrl}
+                    alt={movie.title}
+                  />
+                  <CardContent sx={{ flexGrow: 1, px: 2 }}>
+                    <Typography variant="subtitle1" color="white">
+                      {movie.title}
+                    </Typography>
+                  </CardContent>
+                  <IconButton
+                    onClick={() => handleEdit(movie)}
+                    color="primary"
+                    sx={{ p: 1 }}
                   >
-                    <ListItemText
-                      sx={{ margin: 1, width: "auto", textAlign: "left" }}
-                    >
-                      Movie: {movie.title}
-                    </ListItemText>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Box>
-        )}
-      </Fragment>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDelete(movie._id)}
+                    color="error"
+                    sx={{ p: 1 }}
+                  >
+                    <DeleteForeverIcon />
+                  </IconButton>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </Box>
+      </Box>
     </Box>
   );
 };

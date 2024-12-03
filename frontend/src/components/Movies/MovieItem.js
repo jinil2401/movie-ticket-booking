@@ -14,19 +14,43 @@ const MovieItem = ({ title, releaseDate, posterUrl, id }) => {
       sx={{
         margin: 2,
         width: 250,
-        height: 320,
-        borderRadius: 5,
+        height: 350,
+        borderRadius: 10,
+        background: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(15px) saturate(180%)",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+        overflow: "hidden",
         ":hover": {
-          boxShadow: "10px 10px 20px #ccc",
+          boxShadow: "0 12px 36px rgba(0, 0, 0, 0.4)",
         },
       }}
     >
-      <img height={"50%"} width="100%" src={posterUrl} alt={title} />
+      <img
+        src={posterUrl}
+        alt={title}
+        style={{
+          height: "50%",
+          width: "99%",
+          objectFit: "cover",
+        }}
+      />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
+        <Typography
+          gutterBottom
+          variant="h6"
+          component="div"
+          sx={{ fontWeight: "bold", textAlign: "center", color: "white" }}
+        >
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            textAlign: "center",
+            color: "rgba(255, 255, 255, 0.8)",
+          }}
+        >
           {new Date(releaseDate).toDateString()}
         </Typography>
       </CardContent>
@@ -38,14 +62,16 @@ const MovieItem = ({ title, releaseDate, posterUrl, id }) => {
           to={`/booking/${id}`}
           sx={{
             margin: "auto",
-            bgcolor: "#2b2d42",
+            backgroundColor: "rgba(255, 76, 96, 0.8)",
             ":hover": {
-              bgcolor: "#121217",
+              backgroundColor: "rgba(230, 57, 70, 0.9)",
             },
+            textTransform: "none",
+            fontWeight: "bold",
           }}
           size="small"
         >
-          Book
+          Book Now
         </Button>
       </CardActions>
     </Card>

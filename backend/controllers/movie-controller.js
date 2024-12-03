@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import Admin from "../models/Admin";
-import Movie from "../models/Movie";
+import Admin from "../models/Admin.js";
+import Movie from "../models/Movie.js";
 export const addMovie = async (req, res, next) => {
   const extractedToken = req.headers.authorization.split(" ")[1];
   if (!extractedToken && extractedToken.trim() === "") {
@@ -63,6 +63,41 @@ export const addMovie = async (req, res, next) => {
   return res.status(201).json({ movie });
 };
 
+// Update a movie
+export const updateMovie = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, releaseDate, posterUrl, featured, actors } = req.body;
+  try {
+    const updatedMovie = await Movie.findByIdAndUpdate(
+      id,
+      { title, description, releaseDate, posterUrl, featured, actors },
+      { new: true }
+    );
+    if (!updatedMovie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    res.status(200).json(updatedMovie);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update movie" });
+  }
+};
+
+// Delete a movie
+export const deleteMovie = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedMovie = await Movie.findByIdAndDelete(id);
+    if (!deletedMovie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    res.status(200).json({ message: "Movie successfully deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete movie" });
+  }
+};
+
+
+
 export const getAllMovies = async (req, res, next) => {
   let movies;
 
@@ -93,3 +128,5 @@ export const getMovieById = async (req, res, next) => {
 
   return res.status(200).json({ movie });
 };
+
+

@@ -5,100 +5,132 @@ import {
   FormLabel,
   IconButton,
   TextField,
-  Typography,
+  Typography
 } from "@mui/material";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { adminLogin, sendAuthRequest } from "../../helpers/api-helpers";
-import { useDispatch } from "react-redux";
-import { adminActions } from "../../store/admin-slice";
-const labelSx = { marginRight: "auto", mt: 1, mb: 1 };
-const AdminAuth = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(true);
-  const [inputs, setInputs] = useState({ email: "", password: "" });
-  const onClose = () => {
-    setOpen(false);
-    navigate("/");
-  };
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { Link } from "react-router-dom";
+
+const labelStyle = { mt: 1, mb: 1 };
+
+const AuthForm = ({ onSubmit, isAdmin }) => {
+  const [inputs, setInputs] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [isSignup, setIsSignup] = useState(false);
+
   const handleChange = (e) => {
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
-  const onRequestSent = (val) => {
-    localStorage.removeItem("userId");
-    localStorage.setItem("adminId", val.id);
-    localStorage.setItem("token", val.token);
-    dispatch(adminActions.login());
-    setOpen(false);
-    navigate("/");
-  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(inputs);
-    adminLogin(inputs)
-      .then(onRequestSent)
-      .catch((err) => console.log(err));
-    setInputs({ name: "", email: "", password: "" });
+    onSubmit({ inputs, signup: isAdmin ? false : isSignup });
   };
 
   return (
-    <Dialog PaperProps={{ style: { borderRadius: 20 } }} open={open}>
-      <Box sx={{ marginLeft: "auto", padding: 1 }}>
-        <IconButton onClick={onClose}>
+    <Dialog
+      PaperProps={{
+        style: {
+          borderRadius: 20,
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+          color: '#323432'
+        }
+      }}
+      open={true}
+    >
+      <Box sx={{ ml: "auto", padding: 1 }}>
+        <IconButton LinkComponent={Link} to="/">
           <CloseRoundedIcon />
         </IconButton>
       </Box>
-      <Typography variant="h4" textAlign={"center"}>
-        {"Login"}
+      <Typography variant="h4" textAlign={"center"} sx={{ color: '#323432' }}>
+        {isSignup ? "Signup" : "Login"}
       </Typography>
       <form onSubmit={handleSubmit}>
         <Box
-          alignItems={"center"}
-          width={400}
           padding={6}
+          display={"flex"}
+          justifyContent={"center"}
+          flexDirection="column"
+          width={400}
           margin="auto"
-          display="flex"
-          flexDirection={"column"}
+          alignContent={"center"}
         >
-          <FormLabel sx={labelSx}>Email</FormLabel>
+          {!isAdmin && isSignup && (
+            <>
+              <FormLabel sx={labelStyle}>Name</FormLabel>
+              <TextField
+                value={inputs.name}
+                onChange={handleChange}
+                margin="normal"
+                variant="standard"
+                type={"text"}
+                name="name"
+                fullWidth
+                InputProps={{
+                  style: {  color: '#323432' },
+                  disableUnderline: true
+                }}
+              />
+            </>
+          )}
+          <FormLabel sx={labelStyle}>Email</FormLabel>
           <TextField
-            onChange={handleChange}
             value={inputs.email}
-            name="email"
-            type="email"
-            variant="standard"
-            fullWidth
-            margin="normal"
-            placeholder="Email"
-          />
-          <FormLabel sx={labelSx}>Password</FormLabel>
-          <TextField
             onChange={handleChange}
-            value={inputs.password}
-            name="password"
-            type={"password"}
-            variant="standard"
-            fullWidth
             margin="normal"
-            placeholder="Password"
+            variant="standard"
+            type={"email"}
+            name="email"
+            fullWidth
+            InputProps={{
+              style: {  color: '#323432' },
+              disableUnderline: true
+            }}
+          />
+          <FormLabel sx={labelStyle}>Password</FormLabel>
+          <TextField
+            value={inputs.password}
+            onChange={handleChange}
+            margin="normal"
+            variant="standard"
+            type={"password"}
+            name="password"
+            fullWidth
+            InputProps={{
+              style: { color: '#323432' },
+              disableUnderline: true
+            }}
           />
           <Button
-            sx={{ borderRadius: 10, mt: 2, bgcolor: "#2b2d42" }}
+            sx={{ mt: 2, borderRadius: 10, bgcolor: "#2b2d42" }}
             type="submit"
             fullWidth
             variant="contained"
           >
-            {"Login"}
+            {isSignup ? "Signup" : "Login"}
           </Button>
+          {!isAdmin && (
+            <Button
+              onClick={() => setIsSignup(!isSignup)}
+              sx={{ mt: 2, borderRadius: 10 }}
+              fullWidth
+            >
+              Switch To {isSignup ? "Login" : "Signup"}
+            </Button>
+          )}
         </Box>
       </form>
     </Dialog>
   );
 };
 
-export default AdminAuth;
+export default AuthForm;
