@@ -1,4 +1,4 @@
-# Movie Ticket Booking System
+# Movie Ticket Booking System 🎥
 
 ## Table of Contents
 1. [Introduction](#introduction)
