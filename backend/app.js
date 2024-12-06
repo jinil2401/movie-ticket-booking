@@ -9,14 +9,6 @@ import cors from "cors";
 dotenv.config();
 const app = express();
 
-// middlewares
-app.use(cors());
-app.use(express.json());
-app.use("/user", userRouter);
-app.use("/admin", adminRouter);
-app.use("/movie", movieRouter);
-app.use("/booking", bookingsRouter);
-
 mongoose
   .connect(
     `mongodb+srv://parekhjinil:${process.env.MONGODB_PASSWORD}@http5222fullstackwebdev.auksvlb.mongodb.net/?retryWrites=true&w=majority&appName=Http5222FullStackWebDevelopment`
@@ -28,3 +20,16 @@ mongoose
     )
   )
   .catch((e) => console.log(e));
+  
+// middlewares
+app.use(cors());
+app.use(express.json());
+app.use("/user", userRouter);
+app.use("/admin", adminRouter);
+app.use("/movie", movieRouter);
+app.use("/booking", bookingsRouter);
+
+app.get("/", (req, res) => {
+  res.status(200).send("Hello I am Up!");
+});
+
