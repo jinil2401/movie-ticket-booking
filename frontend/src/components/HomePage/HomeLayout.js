@@ -15,12 +15,7 @@ const HomeLayout = () => {
   return (
     <Box width="100%" height="100vh" marginTop={2} margin="auto">
       <Box margin={"auto"} width="80%" height="40%" padding={2} display="flex">
-        <img
-          src="https://i.ytimg.com/vi/yEinBUJG2RI/maxresdefault.jpg"
-          alt="Rocketry"
-          width="100%"
-          height="100%"
-        />
+       
       </Box>
       <Box padding={5} margin="auto">
         <Typography variant="h4" textAlign={"center"}>
